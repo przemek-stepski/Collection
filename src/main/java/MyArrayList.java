@@ -2,10 +2,10 @@ import java.util.Arrays;
 
 public class MyArrayList implements MyList {
     Object[] array;
-    int listSize = 0;
+    int currentIndex = 0;
 
     public MyArrayList() {
-        array = new Object[100];
+        array = new Object[10];
     }
 
     /**
@@ -17,38 +17,82 @@ public class MyArrayList implements MyList {
 
     @Override
     public void add(Object o) {
-        if (listSize == array.length) {
-            Object[] tempArray = Arrays.copyOf(array, array.length*2);
+        if (currentIndex == array.length - 1) {
+            Object[] tempArray = Arrays.copyOf(array, array.length * 2);
             array = tempArray;
         }
-        array[listSize] = o;
-        listSize++;
+        array[currentIndex] = o;
+        currentIndex++;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        if (o == null) {
+            for (int i = 0; i < currentIndex; i++) {
+                if (array[i] == o) {
+                    return true;
+                }
+            }
+        }
+        for (int i = 0; i < currentIndex; i++) {
+            if (array[i].equals(o)) {
+                return (true);
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean remove(Object o) {
+        if (contains(o)) {
+            remove(firstIndexOf(o));
+            return true;
+
+        }
         return false;
     }
 
     @Override
-    public boolean remove(int index) {
-        return false;
+    public Object remove(int index) {
+        if (index < 0 || index >= currentIndex) throw new MyException();
+        Object toReturn = array[index];
+        for (int i = index; i < currentIndex; i++) {
+            array[i] = array[i + 1];
+        }
+        currentIndex--;
+        return toReturn;
     }
 
     @Override
     public Object get(int index) {
-        if (index > listSize) throw new MyException();
+        if (index < 0 || index >= currentIndex) throw new MyException();
         return array[index];
     }
 
     @Override
     public int firstIndexOf(Object o) {
-        return 0;
+        if (contains(o)) {
+            if (o == null) {
+                for (int i = 0; i < currentIndex; i++) {
+                    if (array[i] == o) {
+                        System.out.println("List contains your object at index: " + i);
+                        return i;
+                    }
+                }
+            }
+            for (int i = 0; i < currentIndex; i++) {
+                if (array[i].equals(o)) {
+                    System.out.println("List contains your object at index: " + i);
+                    return i;
+                }
+            }
+        }
+
+        return -1;
     }
 
     @Override
     public int size() {
-        return 0;
+        return currentIndex;
     }
-    //todo test if list has 5 elements and I get 5th element, and 6th element
 }
